@@ -1,0 +1,79 @@
+- name: Expense SG Rules
+  sg:
+    - expense-dev-db
+    - expense-dev-backend
+    - expense-dev-frontend
+    - expense-dev-bastion
+    - expense-dev-app-alb
+    - expense-dev-vpn
+  ingress_rules:
+    - db:
+        - name: db_backend
+          description: db accepting connection from backend
+          port: 3306
+          source: backend
+
+        - name: db_bastion
+          description: db accepting connection from bastion
+          port: 3306
+          source: bastion
+
+        - name: db_vpn
+          description: db accepting connection from vpn
+          port: 3306
+          source: vpn
+
+    - backend:
+        - name: backend_vpn_ssh
+          description: backend accepting connection from vpn_ssh
+          port: 22
+          source: vpn_ssh
+
+        - name: backend_vpn_http
+          description: backend accepting connection from vpn_http
+          port: 8080
+          source: vpn_http
+
+        - name: backend_bastion
+          description: backend accepting connection from bastion
+          port: 22
+          source: bastion
+
+        - name: backend_app_alb
+          description: backend accepting connection from app_alb
+          port: 8080
+          source: app_alb
+
+    - frontend:
+        - name: frontend_public
+          description: frontend accepting connection from public
+          port: 80
+          source: public
+
+        - name: frontend_bastion
+          description: frontend accepting connection from bastion
+          port: 22
+          source: bastion
+
+    - bastion:
+        - name: bastion_public
+          description: bastion accepting connection from public
+          port: 22
+          source: public
+
+    - app_alb:
+        - name: app_alb_frontend
+          description: app_alb accepting connection from frontend
+          port: 80
+          source: frontend
+
+        - name: app_alb_vpn
+          description: app_alb accepting connection from vpn
+          port: 80
+          source: vpn
+
+    - vpn:
+        - name: vpn_public
+          description: vpn accepting connection from public
+          port: 943, 443, 22, 1194
+          source: public
